@@ -141,8 +141,6 @@ def evaluate(docs, ent_type = "all", only_counts=False):
     print(f"\tRecall:    {recall*100:.2f}%")
     print(f"\tF-score:   {fscore*100:.2f}%")
 
-
-
 if __name__ == "__main__":
     ## parse arguments
     parser = argparse.ArgumentParser()
@@ -151,6 +149,7 @@ if __name__ == "__main__":
         help="path to jsonl corpus")
     parser.add_argument("--mode", 
         choices=["train", "annotate"],
+        required=True,
         help="choose whether to train or annotate")
     args = parser.parse_args()
 
@@ -163,7 +162,8 @@ if __name__ == "__main__":
         doc_tuples = []
         annotated_docs = []
 
-        test_file = False
+        ## dirty test if we should evaluate metrics or not
+        test_file = "test" in args.jsonl_path
         for doc in docs:
             ner_doc = data_wrangler.docs_to_ner_input([doc], incl_entities=False)
             adoc = annotate("models/", ner_doc)
