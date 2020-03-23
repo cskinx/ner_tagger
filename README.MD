@@ -12,7 +12,7 @@ Each document is first split into sentences, and the entity annotations adjusted
 
 ## Evaluation
 The results of the model can be found in `data/train_NER_out.jsonl` and `data/test_NER_out.jsonl`, respectively.
-The output for the train corpus looks as follows:
+The output for the train corpus with 20 epochs looks as follows:
 ```
 cumulative
 	Counts (Ann|NER): 69 | 0
@@ -71,30 +71,90 @@ Evaluation for all entities:
 	F-score:   6.36%
 ```
 
+With 100 training epochs, the output for the training corpus is as follows:
+```
+cumulative
+	Counts (Ann|NER): 69 | 1691
+	Precision: 3.37%
+	Recall:    80.28%
+	F-score:   6.47%
+date_of_funding
+	Counts (Ann|NER): 254 | 7298
+	Precision: 2.81%
+	Recall:    80.08%
+	F-score:   5.43%
+headquarters_loc
+	Counts (Ann|NER): 751 | 16596
+	Precision: 4.22%
+	Recall:    91.75%
+	F-score:   8.08%
+investor
+	Counts (Ann|NER): 1513 | 39749
+	Precision: 3.75%
+	Recall:    96.88%
+	F-score:   7.22%
+money_funded
+	Counts (Ann|NER): 832 | 19551
+	Precision: 4.12%
+	Recall:    95.49%
+	F-score:   7.89%
+org_in_focus
+	Counts (Ann|NER): 1410 | 32960
+	Precision: 4.38%
+	Recall:    91.38%
+	F-score:   8.35%
+org_url
+	Counts (Ann|NER): 118 | 3804
+	Precision: 2.79%
+	Recall:    87.60%
+	F-score:   5.40%
+type_of_funding
+	Counts (Ann|NER): 433 | 10884
+	Precision: 3.68%
+	Recall:    90.70%
+	F-score:   7.06%
+valuation
+	Counts (Ann|NER): 24 | 182
+	Precision: 4.95%
+	Recall:    34.62%
+	F-score:   8.65%
+year_founded
+	Counts (Ann|NER): 240 | 6134
+	Precision: 4.08%
+	Recall:    97.28%
+	F-score:   7.82%
+Evaluation for all entities:
+	Counts (Ann|NER): 5644 | 138849
+	Precision: 3.94%
+	Recall:    92.71%
+	F-score:   7.55%
+```
+
 And for the test corpus:
 ```
 cumulative
-	Counts (Ann|NER): 0 | 0
+	Counts (Ann|NER): 0 | 17
 date_of_funding
-	Counts (Ann|NER): 0 | 266
+	Counts (Ann|NER): 0 | 302
 headquarters_loc
-	Counts (Ann|NER): 0 | 484
+	Counts (Ann|NER): 0 | 595
 investor
-	Counts (Ann|NER): 0 | 1300
+	Counts (Ann|NER): 0 | 1882
 money_funded
-	Counts (Ann|NER): 0 | 531
+	Counts (Ann|NER): 0 | 546
 org_in_focus
-	Counts (Ann|NER): 0 | 1209
+	Counts (Ann|NER): 0 | 639
 org_url
-	Counts (Ann|NER): 0 | 310
+	Counts (Ann|NER): 0 | 164
 type_of_funding
-	Counts (Ann|NER): 0 | 270
+	Counts (Ann|NER): 0 | 203
 valuation
 	Counts (Ann|NER): 0 | 0
 year_founded
-	Counts (Ann|NER): 0 | 565
+	Counts (Ann|NER): 0 | 349
 Evaluation for all entities:
-	Counts (Ann|NER): 0 | 4935
+	Counts (Ann|NER): 0 | 4697
+
 ```
 
 
