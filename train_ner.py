@@ -9,7 +9,7 @@ import data_wrangler
 import argparse
 from collections import defaultdict
 
-def train(train_data, output_dir=None, n_iter=20):
+def train(train_data, output_dir=None, n_iter=100):
     """Load the model, set up the pipeline and train the entity recognizer."""
     start_with_en = False
     if start_with_en:
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     if args.mode == "train":
         docs = data_wrangler.json_to_docs(args.jsonl_path)
         ner_corpus = data_wrangler.docs_to_ner_input(docs)
-        train(corpus, output_dir="models")
+        train(ner_corpus, output_dir="models")
     elif args.mode == "annotate":
         docs = data_wrangler.json_to_docs(args.jsonl_path)
         doc_tuples = []
