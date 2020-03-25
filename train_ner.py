@@ -67,9 +67,10 @@ def annotate(model_path, corpus_sents):
     nlp = spacy.load(model_path)
     annotated = []
 
-    ents = []
     for text in corpus_sents:
         doc = nlp(text)
+        # breakpoint()
+        ents = []
         for ent in doc.ents:
             ent_pos = text.index(ent.text)
             ent_end_pos = ent_pos + len(ent.text)
@@ -180,4 +181,5 @@ if __name__ == "__main__":
             "type_of_funding", "valuation", "year_founded", "all"]
         for ent_type in labels:
             evaluate(doc_tuples, ent_type, only_counts=test_file)
-        data_wrangler.json_docs_to_file(annotated_docs, "data/train_NER_out.jsonl")
+        out_file = args.jsonl_path.replace(".jsonl", "_NER_out.jsonl")
+        data_wrangler.json_docs_to_file(annotated_docs, out_file)
