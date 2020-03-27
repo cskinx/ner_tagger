@@ -47,6 +47,9 @@ def train(train_data, output_dir=None, n_iter=100):
                     losses=losses,
                 )
             print("Losses", losses)
+            output_dir = Path("train_model/")
+            nlp.to_disk(output_dir)
+            evaluate_file("data/dev.jsonl", "train_model/", all_labels=False, write_out_jsonl=False)
 
     # test the trained model
     for text, anns in train_data[:200]:
@@ -84,7 +87,7 @@ def annotate(model_path, corpus_sents):
 
     return annotated
 
-def evaluate(docs, ent_type = "all", only_counts=False):
+def evaluate(docs, ent_type = "all", only_counts=False, full_output=True):
     """ has a tuple for each doc: list of annotated entities
     as well as a list of NER entities."""
     ann_counts = 0
@@ -118,11 +121,12 @@ def evaluate(docs, ent_type = "all", only_counts=False):
                 if not found:
                     FN += 1
 
-    if ent_type == "all":
-        print("Evaluation for all entities:")
-    else:
-        print(f"{ent_type}")
-    print(f"\tCounts (Ann|NER): {ann_counts} | {ner_counts}")
+    if full_output:
+        if ent_type == "all":
+            print("Evaluation for all entities:")
+        else:
+            print(f"{ent_type}")
+        print(f"\tCounts (Ann|NER): {ann_counts} | {ner_counts}")
     if only_counts:
         return
     
@@ -142,6 +146,35 @@ def evaluate(docs, ent_type = "all", only_counts=False):
     print(f"\tRecall:    {recall*100:.2f}%")
     print(f"\tF-score:   {fscore*100:.2f}%")
 
+def evaluate_file(jsonl_path, model_path, all_labels=True, write_out_jsonl=False):
+    docs = data_wrangler.json_to_docs(jsonl_path)
+    doc_tuples = []
+    annotated_docs = []
+
+    ## dirty test if we should evaluate metrics or not
+    test_file = "test" in args.jsonl_path
+    for doc in docs:
+        ner_doc = data_wrangler.docs_to_ner_input([doc], incl_entities=False)
+        adoc = annotate(model_path, ner_doc)
+
+        ner_doc = data_wrangler.ner_output_to_jsonl(adoc)
+        annotated_docs.append(ner_doc)
+        if not test_file:
+            doc_tuples.append([doc.get("entities"), ner_doc.get("entities")])
+        else:
+            doc_tuples.append([[], ner_doc.get("entities")])
+        # print(doc)
+    labels = ["all"]
+    if all_labels:
+        labels = ["cumulative", "date_of_funding", "headquarters_loc",
+            "investor", "money_funded", "org_in_focus", "org_url",
+            "type_of_funding", "valuation", "year_founded", "all"]
+    for ent_type in labels:
+        evaluate(doc_tuples, ent_type, only_counts=test_file, full_output=all_labels)
+    if write_out_jsonl:
+        out_file = jsonl_path.replace(".jsonl", "_NER_out.jsonl")
+        data_wrangler.json_docs_to_file(annotated_docs, out_file)
+
 if __name__ == "__main__":
     ## parse arguments
     parser = argparse.ArgumentParser()
@@ -159,27 +192,4 @@ if __name__ == "__main__":
         ner_corpus = data_wrangler.docs_to_ner_input(docs)
         train(ner_corpus, output_dir="models")
     elif args.mode == "annotate":
-        docs = data_wrangler.json_to_docs(args.jsonl_path)
-        doc_tuples = []
-        annotated_docs = []
-
-        ## dirty test if we should evaluate metrics or not
-        test_file = "test" in args.jsonl_path
-        for doc in docs:
-            ner_doc = data_wrangler.docs_to_ner_input([doc], incl_entities=False)
-            adoc = annotate("models/", ner_doc)
-
-            ner_doc = data_wrangler.ner_output_to_jsonl(adoc)
-            annotated_docs.append(ner_doc)
-            if not test_file:
-                doc_tuples.append([doc.get("entities"), ner_doc.get("entities")])
-            else:
-                doc_tuples.append([[], ner_doc.get("entities")])
-            # print(doc)
-        labels = ["cumulative", "date_of_funding", "headquarters_loc",
-            "investor", "money_funded", "org_in_focus", "org_url",
-            "type_of_funding", "valuation", "year_founded", "all"]
-        for ent_type in labels:
-            evaluate(doc_tuples, ent_type, only_counts=test_file)
-        out_file = args.jsonl_path.replace(".jsonl", "_NER_out.jsonl")
-        data_wrangler.json_docs_to_file(annotated_docs, out_file)
+        evaluate_file(args.jsonl_path, "models/", all_labels=True, write_out_jsonl=True)

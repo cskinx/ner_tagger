@@ -100,4 +100,4 @@ Evaluation for all entities:
 	Counts (Ann|NER): 0 | 201
 ```
 
-Note that there is no valid evaluation here so far, since we trained on the full training set without separating a part of it into a development set, and we don't know the result for the test set.
+When splitting the training documents into two parts (600 + 285), train only on the first one and evaluate on the smaller set of documents, the performance is definitely much lower. Compared to almost 90% on the training set, this development set only has about 50% as an F-score.
